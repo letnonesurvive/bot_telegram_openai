@@ -3,12 +3,14 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import Message
 from aiogram.filters import CommandStart, Command
 import request_manager
+import os
 
 import requests
 
-import secret
+#import secret
+BOT_API_KEY = str(os.environ.get("BOT_API_KEY"))
 
-bot = Bot(secret.telegram_bot_token)
+bot = Bot(BOT_API_KEY)
 dp = Dispatcher()
 rm = request_manager.request_manager("gpt-3.5-turbo")
 

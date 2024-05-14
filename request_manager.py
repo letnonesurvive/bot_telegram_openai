@@ -1,14 +1,15 @@
 
 import httpx
-import secret
+#import secret
 
 from openai import OpenAI
 from openai import AsyncOpenAI
+import os
+
+OPENAI_API_KEY = str(os.environ.get("OPENAI_API_KEY"))
 
 client = AsyncOpenAI(
-    api_key="sk-HDnnlLLw25WZzoSA4lyIJpfXD95aooCM",
-    base_url="https://api.proxyapi.ru/openai/v1"
-    #api_key=secret.openai_token,
+    api_key=os.environ.get("OPENAI_API_KEY"),
     #http_client=httpx.AsyncClient(proxies=secret.proxy_url)
 )
    
