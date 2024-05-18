@@ -5,9 +5,9 @@ from aiogram.filters import CommandStart, Command
 import request_manager
 import os
 
-import requests
-
+#import requests
 #import secret
+
 BOT_API_KEY = str(os.environ.get("BOT_API_KEY"))
 
 bot = Bot(BOT_API_KEY)
@@ -29,14 +29,6 @@ async def main():
     await dp.start_polling(bot)  
 
 if __name__ == '__main__':
-
-    # proxies = {
-    # 'http': 'http://172.64.89.152:80',
-    # }
-
-    # url = 'https://api.openai.com/v1/chat/completions'
-    # response = requests.get(url, proxies=proxies)
-    # print(response)
     try: 
         asyncio.run(main())
     except KeyboardInterrupt:

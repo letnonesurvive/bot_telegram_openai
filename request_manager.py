@@ -1,16 +1,18 @@
 
-import httpx
 #import secret
+#from openai import OpenAI
 
-from openai import OpenAI
+import requests
+import httpx
 from openai import AsyncOpenAI
 import os
 
+url = "https://api.openai.com/v1/chat/completions"
 OPENAI_API_KEY = str(os.environ.get("OPENAI_API_KEY"))
 
 client = AsyncOpenAI(
     api_key=os.environ.get("OPENAI_API_KEY"),
-    #http_client=httpx.AsyncClient(proxies=secret.proxy_url)
+    http_client=httpx.AsyncClient(proxies="http://117.250.3.58:8080")
 )
    
 class request_manager:
@@ -26,6 +28,16 @@ class request_manager:
             "role": "user", 
             "content": theContent
         })
+        # headers = {"Content-Type" : "application/json", "Authorization": f"Bearer {OPENAI_API_KEY}" }
+        # data = {
+        #         "model": "gpt-3.5-turbo",
+        #         "messages": [{"role": "user", "content": "Say this is a test!"}],
+        #          "temperature": 0.7
+        #        }
+        # proxies = {
+        #             "http" : ""
+        #           }
+        # aResponce = requests.get(url, headers=headers, data=data, proxies=proxies)
         aResponce = await client.chat.completions.create(
                 model = self.myChatModel,
                 messages= self.messages,
