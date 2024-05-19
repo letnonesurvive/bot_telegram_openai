@@ -1,18 +1,15 @@
-
-#import secret
-#from openai import OpenAI
-
 import requests
 import httpx
 from openai import AsyncOpenAI
 import os
 
-url = "https://api.openai.com/v1/chat/completions"
+#url = "https://api.openai.com/v1/chat/completions"
+
 OPENAI_API_KEY = str(os.environ.get("OPENAI_API_KEY"))
 
 client = AsyncOpenAI(
     api_key=OPENAI_API_KEY,
-    #http_client=httpx.AsyncClient(proxies="http://18080965-all-country-US-state-5128638-city-5128581-asn-21928:1ijbsxhhu3@175.110.113.33:14337")
+    #http_client=httpx.AsyncClient(proxies="http://")
 )
    
 class request_manager:
@@ -38,7 +35,10 @@ class request_manager:
             "role" : aResponce.choices[0].message.role,
             "content" : self.myResponce
         })
-        
+    
+    def set_max_tokens(self, theMaxTokens: int) -> None:
+        self.myMaxTokens = theMaxTokens
+    
     def get_answer(self) -> str:
         if not self.myResponce:
             raise ValueError("Empty answer. Send request first")

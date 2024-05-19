@@ -1,31 +1,15 @@
 import asyncio
-from aiogram import Bot, Dispatcher
-from aiogram.types import Message
-from aiogram.filters import CommandStart, Command
-import request_manager
 import os
 
-#import requests
-#import secret
+from aiogram import Bot, Dispatcher
+from handlers import router
 
 BOT_API_KEY = str(os.environ.get("BOT_API_KEY"))
-
-bot = Bot(BOT_API_KEY)
-dp = Dispatcher()
-rm = request_manager.request_manager("gpt-3.5-turbo")
-
-@dp.message(CommandStart())
-async def cmd_start(message: Message):
-    await message.answer("Привет")
-   
-@dp.message()
-async def cmd_start(message: Message):
-    await rm.send_request(message.text)
-    anAnswer = rm.get_answer()
-    await message.answer(anAnswer)
-    print(anAnswer)
    
 async def main():
+    bot = Bot(BOT_API_KEY)
+    dp = Dispatcher()
+    dp.include_router(router)
     await dp.start_polling(bot)  
 
 if __name__ == '__main__':
