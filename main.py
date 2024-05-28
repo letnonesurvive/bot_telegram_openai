@@ -4,10 +4,11 @@ import os
 from aiogram import Bot, Dispatcher
 from handlers import router
 
+
 BOT_API_KEY = str(os.environ.get("BOT_API_KEY"))
+bot = Bot(BOT_API_KEY)
    
 async def main():
-    bot = Bot(BOT_API_KEY)
     dp = Dispatcher()
     dp.include_router(router)
     await dp.start_polling(bot)  
