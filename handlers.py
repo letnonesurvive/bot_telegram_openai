@@ -47,12 +47,20 @@ async def command_clear(message: Message):
         await message.answer("Диалог был очищен")
       
 @router.message(ButtonFilter("Мой аккаунт 🤓"))
-async def command_clear(message: Message):
-    await message.answer("Ваш аккаунт не существует")   
+async def my_account(message: Message):
+    user = database.get_user(message.from_user.id)
+    await message.answer(f"Id пользователя: {user["user_id"]} \n"
+                    f"Никнейм: {user["nickname"]} \n"
+                    f"Время подписки: {user["time_sub"]} \n"
+                    f"Число оставшихся запросов: {user["request_num"]}")
 
 @router.message(ButtonFilter("Выбрать модель 🕹"))
-async def command_clear(message: Message):
+async def choose_the_model(message: Message):
     await message.reply("Выберите вариант модели", reply_markup=keyboards.settingsModelKeyboard)
+    
+@router.message(ButtonFilter("Подключить подписку 🤑"))
+async def subscribe(message: Message):
+    await message.reply("Выберите вариант подписки", reply_markup=keyboards.subscriptionKeyboard)     
 
 @router.callback_query(F.data.in_(["text_models", "image_models"]))
 async def pick_type_model(callback: CallbackQuery):
@@ -66,6 +74,8 @@ async def pick_type_model(callback: CallbackQuery):
 @router.callback_query(F.data.in_(["gpt-3.5-turbo", "gpt-4o", "gpt-4"]))
 async def gpt_set_text_model(callback: CallbackQuery):
     await callback.answer(f"Вы выбрали {callback.data}")
+    await bot.delete_message(callback.from_user.id, callback.message.message_id)
+    await bot.send_message(chat_id=callback.from_user.id, text=f"Установлена модель {callback.data}")
     global rm
     rm = chat_manager()
     rm.set_model(callback.data)
@@ -73,13 +83,11 @@ async def gpt_set_text_model(callback: CallbackQuery):
 @router.callback_query(F.data.in_(["dall-e-3", "dall-e-2"]))
 async def gpt_set_image_model(callback: CallbackQuery):
     await callback.answer(f"Вы выбрали {callback.data}")
+    await bot.delete_message(callback.from_user.id, callback.message.message_id)
+    await bot.send_message(chat_id=callback.from_user.id, text=f"Установлена модель {callback.data}")
     global rm
     rm = image_manager()
     rm.set_model(callback.data)
-
-@router.message(ButtonFilter("Подключить подписку 🤑"))
-async def command_clear(message: Message):
-    await message.reply("Выберите вариант подписки", reply_markup=keyboards.subscriptionKeyboard)   
 
 @router.callback_query(F.data.in_(["submonth_150", "submonth_300", "submonth_450"]))
 async def submonth(callback: types.CallbackQuery):

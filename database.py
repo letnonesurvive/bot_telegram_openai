@@ -4,6 +4,7 @@ class Database:
     def __init__(self, db_file_path) -> None:
         self.connection = sqlite3.connect(db_file_path)
         self.cursor = self.connection.cursor()
+        #self.connection.row_factory = sqlite3.Row
         
     def add_user(self, user_id):
         with self.connection:
@@ -14,4 +15,29 @@ class Database:
             result = self.cursor.execute("SELECT * FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
             return bool(len(result))
     
-   #def set_nick
+    def get_user_id(self, user_id):
+        return user_id
+    
+    def get_time_sub(self, user_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `time_sub` FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
+            for row in result:
+                time_sub = int(row[0])
+            return time_sub
+        
+    def get_request_sub(self, user_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT `request_num` FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
+            for row in result:
+                request_num = int(row[0])
+            return request_num
+    
+    def get_user(self, user_id):
+        with self.connection:
+            result = self.cursor.execute("SELECT * FROM `users` WHERE `user_id` = ?", (user_id,)).fetchall()
+            aRes = dict()
+            aRes["user_id"] = result[0][1]
+            aRes["nickname"] = result[0][2]
+            aRes["time_sub"] = result[0][3]
+            aRes["request_num"] = result[0][4]
+            return aRes
