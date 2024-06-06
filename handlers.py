@@ -13,6 +13,8 @@ from database import Database
 import keyboards
 
 import os
+import time
+import datetime
 YOOTOKEN = str(os.environ.get("YOOTOKEN"))
 
 router = Router()
@@ -25,6 +27,9 @@ database =  Database("users_database")
 
 from main import bot
 
+def days_to_seconds(days):
+    return days * 24 * 60 * 60
+
 class ButtonFilter(Filter):
     def __init__(self, my_text: str) -> None:
         self.my_text = my_text
@@ -35,7 +40,7 @@ class ButtonFilter(Filter):
 @router.message(CommandStart())
 async def command_start(message: Message):
     await message.answer("Добро пожаловать в ChatGPT бот", reply_markup=keyboards.mainKeyboard)
-    if (not database.is_user_exists(message.from_user.id)):
+    if not database.is_user_exists(message.from_user.id):
         database.add_user(message.from_user.id)
     else:
         print("user exists in database")
@@ -50,9 +55,9 @@ async def command_clear(message: Message):
 async def my_account(message: Message):
     user = database.get_user(message.from_user.id)
     await message.answer(f"Id пользователя: {user["user_id"]} \n"
-                    f"Никнейм: {user["nickname"]} \n"
-                    f"Время подписки: {user["time_sub"]} \n"
-                    f"Число оставшихся запросов: {user["request_num"]}")
+                         f"Никнейм: {user["nickname"]} \n"
+                         f"Время подписки: {user["time_sub"]} \n"
+                         f"Число оставшихся запросов: {user["request_num"]}")
 
 @router.message(ButtonFilter("Выбрать модель 🕹"))
 async def choose_the_model(message: Message):
@@ -116,6 +121,8 @@ async def process_pre_checkout_query(pre_checkout_query: types.PreCheckoutQuery)
 @router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def process_pay(message: Message):
     if message.successful_payment.invoice_payload == "month_sub":
+        time_sub = int(time.time()) + days_to_seconds(30)
+        database.set_time_sub(message.from_user.id, time_sub)
         await message.answer("Вам выдана подписка на месяц")        
    
 @router.message()
